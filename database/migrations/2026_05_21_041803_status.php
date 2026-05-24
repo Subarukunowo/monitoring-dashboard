@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('areas', function (Blueprint $table) {
+        Schema::create('status', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_area', 100);
+            $table->enum('status_kerja', ['pending', 'on_progress', 'completed']);
             $table->timestamp('created_at')->useCurrent();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('areas');
+        Schema::dropIfExists('status');
     }
 };
