@@ -80,7 +80,7 @@
                     @error('id_area') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- Pelanggan (teks bebas) --}}
+                {{-- Pelanggan --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Pelanggan</label>
                     <input type="text" name="nama_pelanggan" value="{{ old('nama_pelanggan') }}"
@@ -90,21 +90,17 @@
                     @error('nama_pelanggan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- Pengawas --}}
+                {{-- Pengawas (teks bebas) --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Pengawas</label>
-                    <select name="id_pengawas"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        <option value="">Pilih Pengawas</option>
-                        @foreach($pengawass as $pengawas)
-                            <option value="{{ $pengawas->id }}" {{ old('id_pengawas') == $pengawas->id ? 'selected' : '' }}>
-                                {{ $pengawas->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="nama_pengawas" value="{{ old('nama_pengawas') }}"
+                        placeholder="Nama pengawas"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                            @error('nama_pengawas') border-red-500 bg-red-50 @else border-gray-300 @enderror">
+                    @error('nama_pengawas') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- Jenis Pekerjaan (teks bebas) --}}
+                {{-- Jenis Pekerjaan --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Pekerjaan</label>
                     <input type="text" name="jenis_pekerjaan" value="{{ old('jenis_pekerjaan') }}"
@@ -151,6 +147,16 @@
                     <input type="text" name="no_sap" value="{{ old('no_sap') }}"
                         placeholder="SAP : XXXXX"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+
+                {{-- Link Maps --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Link Maps</label>
+                    <input type="url" name="link_maps" value="{{ old('link_maps') }}"
+                        placeholder="https://maps.google.com/..."
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                            @error('link_maps') border-red-500 bg-red-50 @else border-gray-300 @enderror">
+                    @error('link_maps') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
             </div>
@@ -232,45 +238,44 @@
         </form>
     </div>
 </div>
-
-{{-- Preview script --}}
 <script>
-    function previewGambar(inputId, previewId) {
-        document.getElementById(inputId).addEventListener('change', function () {
-            const wrap = document.getElementById(previewId);
+    function setupFotoInput(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const wrap  = document.getElementById(previewId);
+        input.addEventListener('change', function () {
             wrap.innerHTML = '';
             [...this.files].forEach(file => {
-                if (!file.type.startsWith('image/')) return;
                 const reader = new FileReader();
                 reader.onload = e => {
-                    wrap.insertAdjacentHTML('beforeend', `
-                        <div class="relative">
-                            <img src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg border border-blue-200">
-                            <span class="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full px-1.5 leading-5">Baru</span>
-                        </div>`);
+                    const div = document.createElement('div');
+                    div.className = 'relative';
+                    div.innerHTML = `<img src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg border border-blue-200">`;
+                    wrap.appendChild(div);
                 };
                 reader.readAsDataURL(file);
             });
         });
     }
 
-    function previewDokumen(inputId, previewId) {
-        document.getElementById(inputId).addEventListener('change', function () {
-            const wrap = document.getElementById(previewId);
+    function setupDokumenInput(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const wrap  = document.getElementById(previewId);
+        input.addEventListener('change', function () {
             wrap.innerHTML = '';
             [...this.files].forEach(file => {
-                wrap.insertAdjacentHTML('beforeend', `
-                    <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
-                        <i class="fa-solid fa-file-lines text-blue-400"></i>
-                        <span class="truncate">${file.name}</span>
-                        <span class="ml-auto text-xs text-blue-500 shrink-0">Baru</span>
-                    </div>`);
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5';
+                row.innerHTML = `
+                    <i class="fa-solid fa-file-lines text-blue-400 shrink-0"></i>
+                    <span class="truncate">${file.name}</span>
+                    <span class="ml-auto text-xs text-blue-500 shrink-0">Baru</span>`;
+                wrap.appendChild(row);
             });
         });
     }
 
-    previewGambar('inp-foto-pekerjaan', 'prev-foto-pekerjaan');
-    previewGambar('inp-foto-administrasi', 'prev-foto-administrasi');
-    previewDokumen('inp-dokumen', 'prev-dokumen');
+    setupFotoInput('inp-foto-pekerjaan',    'prev-foto-pekerjaan');
+    setupFotoInput('inp-foto-administrasi', 'prev-foto-administrasi');
+    setupDokumenInput('inp-dokumen',        'prev-dokumen');
 </script>
 @endsection
