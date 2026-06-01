@@ -80,36 +80,6 @@
                     @error('id_area') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- Pelanggan --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pelanggan</label>
-                    <input type="text" name="nama_pelanggan" value="{{ old('nama_pelanggan') }}"
-                        placeholder="Nama pelanggan / kosongkan jika umum"
-                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
-                            @error('nama_pelanggan') border-red-500 bg-red-50 @else border-gray-300 @enderror">
-                    @error('nama_pelanggan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                {{-- Pengawas (teks bebas) --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pengawas</label>
-                    <input type="text" name="nama_pengawas" value="{{ old('nama_pengawas') }}"
-                        placeholder="Nama pengawas"
-                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
-                            @error('nama_pengawas') border-red-500 bg-red-50 @else border-gray-300 @enderror">
-                    @error('nama_pengawas') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                {{-- Jenis Pekerjaan --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Pekerjaan</label>
-                    <input type="text" name="jenis_pekerjaan" value="{{ old('jenis_pekerjaan') }}"
-                        placeholder="Contoh: Perbaikan Jaringan"
-                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
-                            @error('jenis_pekerjaan') border-red-500 bg-red-50 @else border-gray-300 @enderror">
-                    @error('jenis_pekerjaan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-
                 {{-- Status --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Status *</label>
@@ -125,6 +95,26 @@
                         @endforeach
                     </select>
                     @error('id_status') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Pengawas (input teks) --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Pengawas</label>
+                    <input type="text" name="nama_pengawas" value="{{ old('nama_pengawas') }}"
+                        placeholder="Nama pengawas"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                            @error('nama_pengawas') border-red-500 bg-red-50 @else border-gray-300 @enderror">
+                    @error('nama_pengawas') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Jenis Pekerjaan --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Pekerjaan</label>
+                    <input type="text" name="jenis_pekerjaan" value="{{ old('jenis_pekerjaan') }}"
+                        placeholder="Contoh: Perbaikan Jaringan"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                            @error('jenis_pekerjaan') border-red-500 bg-red-50 @else border-gray-300 @enderror">
+                    @error('jenis_pekerjaan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 {{-- Tanggal Survei --}}
@@ -154,11 +144,70 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Link Maps</label>
                     <input type="url" name="link_maps" value="{{ old('link_maps') }}"
                         placeholder="https://maps.google.com/..."
-                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
                             @error('link_maps') border-red-500 bg-red-50 @else border-gray-300 @enderror">
                     @error('link_maps') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
+            </div>
+
+            {{-- ===== DATA PELANGGAN ===== --}}
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Data Pelanggan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {{-- No. Pelanggan (ID PLN) --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">No. Pelanggan (ID PLN)</label>
+                        <input type="number" name="no_pelanggan" value="{{ old('no_pelanggan') }}"
+                            placeholder="Contoh: 151001728632"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                                @error('no_pelanggan') border-red-500 bg-red-50 @enderror">
+                        <p class="text-xs text-gray-400 mt-1">Opsional — untuk identifikasi unik</p>
+                        @error('no_pelanggan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Nama Pelanggan (Wajib) --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pelanggan *</label>
+                        <input type="text" name="nama_pelanggan" value="{{ old('nama_pelanggan') }}"
+                            placeholder="Nama lengkap pelanggan / pelapor"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                                @error('nama_pelanggan') border-red-500 bg-red-50 @else border-gray-300 @enderror"
+                            required>
+                        @error('nama_pelanggan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- No. Telepon --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">No. Telepon</label>
+                        <input type="text" name="no_telepon" value="{{ old('no_telepon') }}"
+                            placeholder="0812xxxxxxxx"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition
+                                @error('no_telepon') border-red-500 bg-red-50 @enderror">
+                        @error('no_telepon') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Status Pelanggan --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select name="status_pelanggan"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            <option value="1" {{ old('status_pelanggan', '1') == '1' ? 'selected' : '' }}>✅ Pelanggan Resmi</option>
+                            <option value="0" {{ old('status_pelanggan') == '0' ? 'selected' : '' }}>⚠ Non-Pelanggan / Umum</option>
+                        </select>
+                    </div>
+
+                    {{-- Alamat --}}
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                        <textarea name="alamat" rows="3"
+                            placeholder="Alamat lengkap pelanggan..."
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition resize-none">{{ old('alamat') }}</textarea>
+                        @error('alamat') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                </div>
             </div>
 
             {{-- Keterangan --}}
@@ -175,7 +224,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {{-- ── FOTO PEKERJAAN ── --}}
+                    {{-- FOTO PEKERJAAN --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Foto Pekerjaan
@@ -190,7 +239,7 @@
                         <div id="prev-foto-pekerjaan" class="flex flex-wrap gap-2 mt-2"></div>
                     </div>
 
-                    {{-- ── FOTO ADMINISTRASI ── --}}
+                    {{-- FOTO ADMINISTRASI --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Foto Administrasi
@@ -205,7 +254,7 @@
                         <div id="prev-foto-administrasi" class="flex flex-wrap gap-2 mt-2"></div>
                     </div>
 
-                    {{-- ── DOKUMEN PENDUKUNG ── --}}
+                    {{-- DOKUMEN PENDUKUNG --}}
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Dokumen Pendukung
@@ -238,6 +287,8 @@
         </form>
     </div>
 </div>
+
+{{-- Preview Script --}}
 <script>
     function setupFotoInput(inputId, previewId) {
         const input = document.getElementById(inputId);
