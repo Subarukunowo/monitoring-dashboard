@@ -49,12 +49,13 @@
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-            {{-- Pending / Belum Dikerjakan --}}
+            {{-- Pending --}}
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['status' => 'pending'])) }}"
                class="bg-red-50 p-4 rounded-lg border border-red-100 hover:border-red-300 hover:shadow-sm transition block">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-red-600 font-medium">🔴 Belum Dikerjakan (Pending)</span>
-                    <i class="fa-regular fa-calendar text-red-400"></i>
+                    <span class="text-red-600 font-medium flex items-center gap-2">
+                        <i class="fa-regular fa-calendar text-red-400"></i> Belum Dikerjakan
+                    </span>
                 </div>
                 <span class="text-2xl font-bold text-red-700">{{ $statusData['pending'] }}</span>
                 <span class="text-xs text-red-500 block mt-1">Klik untuk filter</span>
@@ -64,8 +65,9 @@
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['status' => 'on_progress'])) }}"
                class="bg-yellow-50 p-4 rounded-lg border border-yellow-100 hover:border-yellow-300 hover:shadow-sm transition block">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-yellow-600 font-medium">🟡 Sedang Dikerjakan (On Progress)</span>
-                    <i class="fa-regular fa-clock text-yellow-400"></i>
+                    <span class="text-yellow-600 font-medium flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-yellow-400"></i> Sedang Dikerjakan
+                    </span>
                 </div>
                 <span class="text-2xl font-bold text-yellow-700">{{ $statusData['in_progress'] }}</span>
                 <span class="text-xs text-yellow-500 block mt-1">Klik untuk filter</span>
@@ -75,8 +77,9 @@
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['status' => 'on_hold'])) }}"
                class="bg-orange-50 p-4 rounded-lg border border-orange-100 hover:border-orange-300 hover:shadow-sm transition block">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-orange-600 font-medium">🟠 Ditunda</span>
-                    <i class="fa-solid fa-pause text-orange-400"></i>
+                    <span class="text-orange-600 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-pause text-orange-400"></i> Ditunda
+                    </span>
                 </div>
                 <span class="text-2xl font-bold text-orange-700">{{ $statusData['on_hold'] }}</span>
                 <span class="text-xs text-orange-500 block mt-1">Klik untuk filter</span>
@@ -86,8 +89,9 @@
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['status' => 'completed'])) }}"
                class="bg-green-50 p-4 rounded-lg border border-green-100 hover:border-green-300 hover:shadow-sm transition block">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-green-600 font-medium">🟢 Selesai</span>
-                    <i class="fa-solid fa-circle-check text-green-400"></i>
+                    <span class="text-green-600 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-green-400"></i> Selesai
+                    </span>
                 </div>
                 <span class="text-2xl font-bold text-green-700">{{ $statusData['completed'] }}</span>
                 <span class="text-xs text-green-500 block mt-1">Klik untuk filter</span>
@@ -113,8 +117,9 @@
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['filter' => 'overdue'])) }}"
                class="border border-red-200 rounded-xl p-5 hover:border-red-400 hover:shadow-md transition block">
                 <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-red-800 font-semibold">🔴 Melebihi Deadline & Terbuka</h3>
-                    <i class="fa-solid fa-bell text-red-500"></i>
+                    <h3 class="text-red-800 font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-bell text-red-500"></i> Melebihi Deadline & Terbuka
+                    </h3>
                 </div>
                 <div class="text-4xl font-bold text-red-600 mb-2">{{ $workOrders['overdue_open'] }}</div>
                 <p class="text-gray-500 text-sm">Pekerjaan yang sudah lewat deadline dan masih terbuka</p>
@@ -124,8 +129,9 @@
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['filter' => 'due_today'])) }}"
                class="border border-yellow-200 rounded-xl p-5 hover:border-yellow-400 hover:shadow-md transition block">
                 <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-yellow-800 font-semibold">🟡 Jatuh Tempo Hari Ini</h3>
-                    <i class="fa-regular fa-calendar-check text-yellow-500"></i>
+                    <h3 class="text-yellow-800 font-semibold flex items-center gap-2">
+                        <i class="fa-regular fa-calendar-check text-yellow-500"></i> Jatuh Tempo Hari Ini
+                    </h3>
                 </div>
                 <div class="text-4xl font-bold text-yellow-600 mb-2">{{ $workOrders['due_today_open'] }}</div>
                 <p class="text-gray-500 text-sm">Pekerjaan yang harus selesai hari ini</p>
@@ -134,8 +140,9 @@
             {{-- Assigned To Me --}}
             <div class="border border-purple-200 rounded-xl p-5">
                 <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-purple-800 font-semibold">🟣 Ditugaskan ke Saya</h3>
-                    <i class="fa-solid fa-user-check text-purple-500"></i>
+                    <h3 class="text-purple-800 font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-user-check text-purple-500"></i> Ditugaskan ke Saya
+                    </h3>
                 </div>
                 <div class="text-4xl font-bold text-purple-600 mb-2">{{ $workOrders['assigned_to_me'] }}</div>
                 <p class="text-gray-500 text-sm">Pekerjaan yang ditugaskan khusus kepada Anda</p>
@@ -145,8 +152,9 @@
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['filter' => 'created_today'])) }}"
                class="border border-teal-200 rounded-xl p-5 hover:border-teal-400 hover:shadow-md transition block">
                 <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-teal-800 font-semibold">🟢 Dibuat Hari Ini</h3>
-                    <i class="fa-solid fa-circle-plus text-teal-500"></i>
+                    <h3 class="text-teal-800 font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-circle-plus text-teal-500"></i> Dibuat Hari Ini
+                    </h3>
                 </div>
                 <div class="text-4xl font-bold text-teal-600 mb-2">{{ $workOrders['created_today'] }}</div>
                 <p class="text-gray-500 text-sm">Laporan baru yang dibuat dalam 24 jam terakhir</p>
@@ -155,8 +163,9 @@
             {{-- Created By Me --}}
             <div class="border border-indigo-200 rounded-xl p-5">
                 <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-indigo-800 font-semibold">🔵 Dibuat oleh Saya</h3>
-                    <i class="fa-solid fa-user-pen text-indigo-500"></i>
+                    <h3 class="text-indigo-800 font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-user-pen text-indigo-500"></i> Dibuat oleh Saya
+                    </h3>
                 </div>
                 <div class="text-4xl font-bold text-indigo-600 mb-2">{{ $workOrders['created_by_me'] }}</div>
                 <p class="text-gray-500 text-sm">Laporan yang Anda buat</p>
@@ -166,8 +175,9 @@
             <a href="{{ route('dashboard', array_merge(request()->except(['status', 'filter', 'area', 'page']), ['filter' => 'due_this_week'])) }}"
                class="border border-cyan-200 rounded-xl p-5 hover:border-cyan-400 hover:shadow-md transition block">
                 <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-cyan-800 font-semibold">🟦 Jatuh Tempo Minggu Ini</h3>
-                    <i class="fa-regular fa-calendar-days text-cyan-500"></i>
+                    <h3 class="text-cyan-800 font-semibold flex items-center gap-2">
+                        <i class="fa-regular fa-calendar-days text-cyan-500"></i> Jatuh Tempo Minggu Ini
+                    </h3>
                 </div>
                 <div class="text-4xl font-bold text-cyan-600 mb-2">{{ $workOrders['due_this_week'] }}</div>
                 <p class="text-gray-500 text-sm">Pekerjaan yang deadline-nya dalam 7 hari ke depan</p>

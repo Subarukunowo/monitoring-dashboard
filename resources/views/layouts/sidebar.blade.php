@@ -33,8 +33,8 @@
             <div class="px-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Overview</div>
             <a href="{{ route('dashboard') }}"
                 class="flex items-center px-4 py-3 transition
-                    {{ request()->routeIs('dashboard') 
-                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium' 
+                    {{ request()->routeIs('dashboard')
+                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent' }}">
                 <i class="fa-solid fa-border-all w-6"></i> Overview
             </a>
@@ -42,39 +42,68 @@
             {{-- Work Management --}}
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Work Management</div>
 
+            {{-- Laporan --}}
             <a href="{{ route('laporan.index') }}"
                 class="flex items-center px-4 py-2.5 transition
-                    {{ request()->routeIs('laporan.*') 
-                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium' 
+                    {{ request()->routeIs('laporan.*')
+                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent' }}">
                 <i class="fa-solid fa-clipboard-list w-6"></i> Laporan
             </a>
 
-            <a href="#"
-                class="flex items-center px-4 py-2.5 text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent transition">
+            {{-- RAB --}}
+            <a href="{{ route('coming-soon', 'rab') }}"
+                class="flex items-center px-4 py-2.5 transition
+                    {{ request()->is('coming-soon/rab')
+                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent' }}">
                 <i class="fa-solid fa-calculator w-6"></i> RAB
             </a>
 
-            <a href="#"
-                class="flex items-center px-4 py-2.5 text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent transition">
+            {{-- Tutup Kontrak --}}
+            <a href="{{ route('coming-soon', 'tutup-kontrak') }}"
+                class="flex items-center px-4 py-2.5 transition
+                    {{ request()->is('coming-soon/tutup-kontrak')
+                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent' }}">
                 <i class="fa-solid fa-file-signature w-6"></i> Tutup Kontrak
             </a>
 
             {{-- Dokumentasi (accordion) --}}
-            <div x-data="{ open: {{ request()->routeIs('dokumentasi.*') ? 'true' : 'false' }} }">
+            <div x-data="{ open: {{ request()->is('coming-soon/dokumentasi*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
-                    class="w-full flex items-center px-4 py-2.5 text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent transition">
+                    class="w-full flex items-center px-4 py-2.5 border-l-4 border-transparent transition
+                        {{ request()->is('coming-soon/dokumentasi*')
+                            ? 'text-blue-600'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600' }}">
                     <i class="fa-solid fa-folder w-6"></i> Dokumentasi
-                    <i class="fa-solid fa-chevron-down ml-auto text-xs transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                    <i class="fa-solid fa-chevron-down ml-auto text-xs transition-transform duration-200"
+                        :class="open ? 'rotate-180' : ''"></i>
                 </button>
                 <div x-show="open" x-transition class="pl-10 text-sm">
-                    <a href="#" class="block py-1.5 text-gray-500 hover:text-blue-600">Dokumentasi Pekerjaan</a>
-                    <a href="#" class="block py-1.5 text-gray-500 hover:text-blue-600">Dokumentasi Administrasi</a>
+                    <a href="{{ route('coming-soon', 'dokumentasi-pekerjaan') }}"
+                        class="block py-1.5
+                            {{ request()->is('coming-soon/dokumentasi-pekerjaan')
+                                ? 'text-blue-600 font-medium'
+                                : 'text-gray-500 hover:text-blue-600' }}">
+                        Dokumentasi Pekerjaan
+                    </a>
+                    <a href="{{ route('coming-soon', 'dokumentasi-administrasi') }}"
+                        class="block py-1.5
+                            {{ request()->is('coming-soon/dokumentasi-administrasi')
+                                ? 'text-blue-600 font-medium'
+                                : 'text-gray-500 hover:text-blue-600' }}">
+                        Dokumentasi Administrasi
+                    </a>
                 </div>
             </div>
 
-            <a href="#"
-                class="flex items-center px-4 py-2.5 text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent transition">
+            {{-- Bill of Quantity --}}
+            <a href="{{ route('coming-soon', 'bill-of-quantity') }}"
+                class="flex items-center px-4 py-2.5 transition
+                    {{ request()->is('coming-soon/bill-of-quantity')
+                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent' }}">
                 <i class="fa-solid fa-table-list w-6"></i> Bill of Quantity (BQ)
             </a>
 

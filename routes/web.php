@@ -42,3 +42,22 @@ Route::middleware('auth')->group(function () {
     Route::post('laporan/{laporan}/dokumen', [DokumenController::class, 'store'])->name('laporan.dokumen.store');
     Route::delete('dokumen/{dokumen}', [DokumenController::class, 'destroy'])->name('dokumen.destroy');
 });
+// ── UNDER CONSTRUCTION & Error PAGES ─────────────────────
+// Satu route untuk semua fitur yang belum siap
+Route::get('/coming-soon/{feature}', function ($feature) {
+    $features = [
+        'rab'                      => ['title' => 'RAB',                    'icon' => 'fa-calculator'],
+        'tutup-kontrak'            => ['title' => 'Tutup Kontrak',          'icon' => 'fa-file-signature'],
+        'dokumentasi-pekerjaan'    => ['title' => 'Dokumentasi Pekerjaan',  'icon' => 'fa-folder'],
+        'dokumentasi-administrasi' => ['title' => 'Dokumentasi Administrasi', 'icon' => 'fa-folder'],
+        'bill-of-quantity'         => ['title' => 'Bill of Quantity (BQ)',  'icon' => 'fa-table-list'],
+    ];
+
+    abort_unless(array_key_exists($feature, $features), 404);
+
+    return view('errors.under-construction', [
+        'pageTitle'   => $features[$feature]['title'],
+        'pageIcon'    => $features[$feature]['icon'],
+        'featureSlug' => $feature,
+    ]);
+})->middleware('auth')->name('coming-soon');
