@@ -19,7 +19,7 @@
         </a>
     </div>
 
-    {{-- Flash --}}
+    {{-- Flash Messages --}}
     @if(session('success'))
         <div class="flex items-center gap-3 mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm">
             <i class="fa-solid fa-circle-check text-green-500"></i>
@@ -31,13 +31,12 @@
     @if($laporans->count())
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             @foreach($laporans as $laporan)
-                @php $badge = $laporan->status_badge; @endphp
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
 
                     {{-- Status + Tanggal --}}
                     <div class="flex items-center justify-between px-4 pt-4 pb-2">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $badge['class'] }}">
-                            {{ $badge['label'] }}
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $laporan->status->badge_class ?? 'bg-gray-100 text-gray-800' }}">
+                            {{ $laporan->status->label ?? 'Tidak Diketahui' }}
                         </span>
                         <span class="text-xs text-gray-400">
                             <i class="fa-regular fa-calendar mr-1"></i>
@@ -75,6 +74,7 @@
         </div>
 
     @else
+        {{-- Empty State --}}
         <div class="flex flex-col items-center justify-center py-20 text-center">
             <div class="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
                 <i class="fa-regular fa-folder-open text-3xl text-gray-400"></i>

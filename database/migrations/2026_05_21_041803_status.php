@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('status', function (Blueprint $table) {
             $table->id();
-            $table->enum('status_kerja', ['pending', 'on_progress', 'completed']);
+            $table->enum('status_kerja', ['pending', 'on_progress','completed','on_hold']);
             $table->timestamp('created_at')->useCurrent();
         });
     }

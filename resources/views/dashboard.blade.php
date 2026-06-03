@@ -7,9 +7,7 @@
 <div class="p-8">
 
     {{-- Date --}}
-    <div class="text-gray-500 mb-4 text-sm">
-        {{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}
-    </div>
+    <div class="text-gray-500 mb-4 text-sm">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</div>
 
     {{-- 🔍 SEARCH FORM --}}
     <form action="{{ route('dashboard') }}" method="GET" class="mb-6 flex gap-2 max-w-2xl">
@@ -45,49 +43,45 @@
             <i class="fa-solid fa-clipboard-list mr-2"></i>Status Pekerjaan
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            @php
-                $statusData = $statusData ?? ['pending' => 0, 'in_progress' => 0, 'on_hold' => 0, 'completed' => 0];
-            @endphp
-            
-            {{-- Pending --}}
+            {{-- Pending - Clickable --}}
             <a href="{{ route('dashboard', array_merge(request()->except('status'), ['status' => 'pending'])) }}"
                class="bg-blue-50 p-4 rounded-lg border border-blue-100 hover:border-blue-300 hover:shadow-md transition block">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-blue-600 font-medium">🟢 Terbuka (Pending)</span>
+                    <span class="text-blue-600 font-medium">🔴 Belum Dikerjakan (Pending)</span>
                     <i class="fa-regular fa-calendar text-blue-400"></i>
                 </div>
-                <span class="text-2xl font-bold text-blue-700">{{ $statusData['pending'] ?? 0 }}</span>
+                <span class="text-2xl font-bold text-blue-700">{{ $statusData['pending'] }}</span>
                 <span class="text-xs text-blue-500 block mt-1">Klik untuk filter</span>
             </a>
 
-            {{-- In Progress --}}
+            {{-- In Progress - Clickable --}}
             <a href="{{ route('dashboard', array_merge(request()->except('status'), ['status' => 'on_progress'])) }}"
                class="bg-yellow-50 p-4 rounded-lg border border-yellow-100 hover:border-yellow-300 hover:shadow-md transition block">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-yellow-600 font-medium">🟡 Sedang Dikerjakan</span>
                     <i class="fa-regular fa-clock text-yellow-400"></i>
                 </div>
-                <span class="text-2xl font-bold text-yellow-700">{{ $statusData['in_progress'] ?? 0 }}</span>
+                <span class="text-2xl font-bold text-yellow-700">{{ $statusData['in_progress'] }}</span>
             </a>
 
-            {{-- On Hold --}}
+            {{-- On Hold - Clickable --}}
             <a href="{{ route('dashboard', array_merge(request()->except('status'), ['status' => 'on_hold'])) }}"
                class="bg-orange-50 p-4 rounded-lg border border-orange-100 hover:border-orange-300 hover:shadow-md transition block">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-orange-600 font-medium">🟠 Ditunda</span>
                     <i class="fa-solid fa-pause text-orange-400"></i>
                 </div>
-                <span class="text-2xl font-bold text-orange-700">{{ $statusData['on_hold'] ?? 0 }}</span>
+                <span class="text-2xl font-bold text-orange-700">{{ $statusData['on_hold'] }}</span>
             </a>
 
-            {{-- Completed --}}
+            {{-- Completed - Clickable --}}
             <a href="{{ route('dashboard', array_merge(request()->except('status'), ['status' => 'completed'])) }}"
                class="bg-green-50 p-4 rounded-lg border border-green-100 hover:border-green-300 hover:shadow-md transition block">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-green-600 font-medium">✅ Selesai</span>
                     <i class="fa-solid fa-circle-check text-green-400"></i>
                 </div>
-                <span class="text-2xl font-bold text-green-700">{{ $statusData['completed'] ?? 0 }}</span>
+                <span class="text-2xl font-bold text-green-700">{{ $statusData['completed'] }}</span>
             </a>
         </div>
     </div>
@@ -104,32 +98,25 @@
             </a>
         </div>
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @php
-                $workOrders = $workOrders ?? [
-                    'overdue_open' => 0, 'due_today_open' => 0, 'assigned_to_me' => 0,
-                    'created_today' => 0, 'created_by_me' => 0, 'due_this_week' => 0
-                ];
-            @endphp
-
-            {{-- 🔴 Overdue & Pending --}}
+            {{-- 🔴 Overdue & Pending (CLICKABLE) --}}
             <a href="{{ route('dashboard', array_merge(request()->except('filter'), ['filter' => 'overdue_open'])) }}"
                class="border border-gray-200 rounded-xl p-5 hover:border-red-300 hover:shadow-md transition block">
                 <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-blue-800 font-semibold">🔴 Melebihi Deadline & Terbuka</h3>
+                    <h3 class="text-blue-800 font-semibold">🔴 Melebihi Deadline & Belum Dikerjakan</h3>
                     <i class="fa-solid fa-bell text-red-500"></i>
                 </div>
-                <div class="text-4xl font-bold text-red-600 mb-2">{{ $workOrders['overdue_open'] ?? 0 }}</div>
-                <p class="text-gray-500 text-sm">Pekerjaan yang sudah lewat deadline dan masih terbuka</p>
+                <div class="text-4xl font-bold text-red-600 mb-2">{{ $workOrders['overdue_open'] }}</div>
+                <p class="text-gray-500 text-sm">Pekerjaan yang sudah lewat deadline dan masih belum dikerjakan</p>
             </a>
 
-            {{-- 🟡 Due Today --}}
+            {{-- 🟡 Due Today (CLICKABLE) --}}
             <a href="{{ route('dashboard', array_merge(request()->except('filter'), ['filter' => 'due_today'])) }}"
                class="border border-gray-200 rounded-xl p-5 hover:border-yellow-300 hover:shadow-md transition block">
                 <div class="flex justify-between items-start mb-4">
                     <h3 class="text-blue-800 font-semibold">🟡 Jatuh Tempo Hari Ini</h3>
                     <i class="fa-regular fa-calendar-check text-yellow-500"></i>
                 </div>
-                <div class="text-4xl font-bold text-yellow-600 mb-2">{{ $workOrders['due_today_open'] ?? 0 }}</div>
+                <div class="text-4xl font-bold text-yellow-600 mb-2">{{ $workOrders['due_today_open'] }}</div>
                 <p class="text-gray-500 text-sm">Pekerjaan yang harus selesai hari ini</p>
             </a>
 
@@ -139,7 +126,7 @@
                     <h3 class="text-blue-800 font-semibold">🟣 Ditugaskan ke Saya</h3>
                     <i class="fa-solid fa-user-check text-purple-500"></i>
                 </div>
-                <div class="text-4xl font-bold text-purple-600 mb-2">{{ $workOrders['assigned_to_me'] ?? 0 }}</div>
+                <div class="text-4xl font-bold text-purple-600 mb-2">{{ $workOrders['assigned_to_me'] }}</div>
                 <p class="text-gray-500 text-sm">Pekerjaan yang ditugaskan khusus kepada Anda</p>
             </div>
 
@@ -149,7 +136,7 @@
                     <h3 class="text-blue-800 font-semibold">🟢 Dibuat Hari Ini</h3>
                     <i class="fa-solid fa-circle-plus text-teal-500"></i>
                 </div>
-                <div class="text-4xl font-bold text-teal-600 mb-2">{{ $workOrders['created_today'] ?? 0 }}</div>
+                <div class="text-4xl font-bold text-teal-600 mb-2">{{ $workOrders['created_today'] }}</div>
                 <p class="text-gray-500 text-sm">Laporan baru yang dibuat dalam 24 jam terakhir</p>
             </div>
 
@@ -159,7 +146,7 @@
                     <h3 class="text-blue-800 font-semibold">🔵 Dibuat oleh Saya</h3>
                     <i class="fa-solid fa-user-pen text-indigo-500"></i>
                 </div>
-                <div class="text-4xl font-bold text-indigo-600 mb-2">{{ $workOrders['created_by_me'] ?? 0 }}</div>
+                <div class="text-4xl font-bold text-indigo-600 mb-2">{{ $workOrders['created_by_me'] }}</div>
                 <p class="text-gray-500 text-sm">Laporan yang Anda buat</p>
             </div>
 
@@ -169,17 +156,13 @@
                     <h3 class="text-blue-800 font-semibold">🟦 Jatuh Tempo Minggu Ini</h3>
                     <i class="fa-regular fa-calendar-days text-cyan-500"></i>
                 </div>
-                <div class="text-4xl font-bold text-cyan-600 mb-2">{{ $workOrders['due_this_week'] ?? 0 }}</div>
+                <div class="text-4xl font-bold text-cyan-600 mb-2">{{ $workOrders['due_this_week'] }}</div>
                 <p class="text-gray-500 text-sm">Pekerjaan yang deadline-nya dalam 7 hari ke depan</p>
             </div>
         </div>
     </div>
 
     {{-- 📑 SECTION 3: Recent Activity --}}
-    @php
-        $recentReports = $recentReports ?? collect();
-    @endphp
-
     @if($recentReports->count() > 0)
         <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
@@ -208,23 +191,20 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($recentReports as $report)
                             @php
-                                $statusKey = $report->status->status_kerja ?? 'pending';
                                 $statusClass = [
                                     'pending'     => 'bg-blue-100 text-blue-800',
                                     'on_progress' => 'bg-yellow-100 text-yellow-800',
-                                    'on_hold'     => 'bg-orange-100 text-orange-800',
                                     'completed'   => 'bg-green-100 text-green-800',
-                                ][$statusKey] ?? 'bg-gray-100 text-gray-700';
+                                ];
 
                                 $statusLabel = [
                                     'pending'     => 'Terbuka',
                                     'on_progress' => 'Sedang Dikerjakan',
-                                    'on_hold'     => 'Ditunda',
                                     'completed'   => 'Selesai',
-                                ][$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey));
+                                ];
 
                                 $isOverdue = false;
-                                if ($report->tanggal_selesai && $statusKey !== 'completed') {
+                                if ($report->tanggal_selesai && $report->status_kerja !== 'completed') {
                                     $isOverdue = \Carbon\Carbon::parse($report->tanggal_selesai)->isPast();
                                 }
                             @endphp
@@ -239,11 +219,11 @@
                                         <span class="ml-2 text-xs text-red-500 font-semibold">⚠ Overdue</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-500">{{ $report->area->nama_area ?? '-' }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">{{ $report->jenisPekerjaan->nama_jenis ?? '-' }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">{{ $report->nama_area }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">{{ $report->nama_jenis }}</td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusClass }}">
-                                        {{ $statusLabel }}
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusClass[$report->status_kerja] ?? 'bg-gray-100 text-gray-700' }}">
+                                        {{ $statusLabel[$report->status_kerja] ?? ucfirst(str_replace('_', ' ', $report->status_kerja)) }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm {{ $isOverdue ? 'text-red-600 font-medium' : 'text-gray-500' }}">

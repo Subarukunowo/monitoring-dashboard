@@ -5,141 +5,150 @@ namespace App\Http\Controllers;
 use App\Models\Laporan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $today = Carbon::today();
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
-        
-        // 🔐 Ganti dengan auth()->id() atau auth()->user()->pengawas_id saat login system siap
-        $currentPengawasId = 1; 
+        $today       = Carbon::today();
+        $endOfWeek   = Carbon::now()->endOfWeek();
 
-        // 🔍 Ambil parameter filter
-        $search = $request->get('search');
-        $statusFilter = $request->get('status');      // open, on_progress, completed
-        $filterType = $request->get('filter');         // overdue, due_today, created_today, due_this_week
-        $areaFilter = $request->get('area');           // id area
+        // Gunakan auth user id (pengawas). Fallback ke 1 jika belum ada auth.
+        $currentPengawasId = optional(Auth::user())->id ?? 1;
 
-        // --- 1. STATUS OVERVIEW (GLOBAL - tidak terpengaruh filter) ---
-        $statusCounts = DB::table('laporan')
-            ->select('id_status', DB::raw('count(*) as total'))
-            ->groupBy('id_status')
-            ->pluck('total', 'id_status');
-
+        // --- 1. STATUS OVERVIEW (global, tidak terpengaruh filter) ---
+        // Join ke tabel status agar tidak bergantung pada hardcode ID.
         $statusData = [
-            'open'        => $statusCounts[1] ?? 0,  // pending/open
-            'in_progress' => $statusCounts[2] ?? 0,  // on_progress
-            'on_hold'     => 0,
-            'completed'   => $statusCounts[3] ?? 0,  // completed
+            'pending'     => Laporan::whereHas('status', fn($q) => $q->whereIn('status_kerja', ['pending', 'open']))->count(),
+            'in_progress' => Laporan::whereHas('status', fn($q) => $q->where('status_kerja', 'on_progress'))->count(),
+            'on_hold'     => Laporan::whereHas('status', fn($q) => $q->where('status_kerja', 'on_hold'))->count(),
+            'completed'   => Laporan::whereHas('status', fn($q) => $q->where('status_kerja', 'completed'))->count(),
         ];
 
-        // --- 2. WORK ORDERS STATS (GLOBAL - tidak terpengaruh filter) ---
+        // --- 2. WORK ORDERS STATS (global, tidak terpengaruh filter) ---
+        $notDone = fn($q) => $q->whereHas('status', fn($s) => $s->whereNotIn('status_kerja', ['completed']));
+
         $workOrders = [
-            'overdue_open' => DB::table('laporan')
-                ->whereIn('id_status', [1, 2])
+            'overdue_open' => Laporan::whereHas('status', fn($q) => $q->whereNotIn('status_kerja', ['completed']))
                 ->whereNotNull('tanggal_selesai')
                 ->whereDate('tanggal_selesai', '<', $today)
                 ->count(),
-            'high_priority_open' => 0,
-            'due_today_open' => DB::table('laporan')
-                ->whereIn('id_status', [1, 2])
+
+            'due_today_open' => Laporan::whereHas('status', fn($q) => $q->whereNotIn('status_kerja', ['completed']))
                 ->whereDate('tanggal_selesai', $today)
                 ->count(),
-            'assigned_to_me' => DB::table('laporan')
-                ->where('id_pengawas', $currentPengawasId)
-                ->whereIn('id_status', [1, 2])
+
+            'assigned_to_me' => Laporan::where('id_pengawas', $currentPengawasId)
+                ->whereHas('status', fn($q) => $q->whereNotIn('status_kerja', ['completed']))
                 ->count(),
-            'created_today' => DB::table('laporan')
-                ->whereDate('created_at', $today)
-                ->count(),
-            'created_by_me' => DB::table('laporan')
-                ->where('id_pengawas', $currentPengawasId)
-                ->count(),
-            'due_this_week' => DB::table('laporan')
-                ->whereIn('id_status', [1, 2])
+
+            'created_today' => Laporan::whereDate('created_at', $today)->count(),
+
+            'created_by_me' => Laporan::where('id_pengawas', $currentPengawasId)->count(),
+
+            'due_this_week' => Laporan::whereHas('status', fn($q) => $q->whereNotIn('status_kerja', ['completed']))
                 ->whereNotNull('tanggal_selesai')
                 ->whereDate('tanggal_selesai', '>=', $today)
                 ->whereDate('tanggal_selesai', '<=', $endOfWeek)
                 ->count(),
         ];
 
-        // --- 3. RECENT ACTIVITY QUERY (TERFILTER) ---
-        $query = DB::table('laporan')
-            ->join('areas', 'laporan.id_area', '=', 'areas.id')
-            ->join('jenis_pekerjaan', 'laporan.id_jenis_pekerjaan', '=', 'jenis_pekerjaan.id')
-            ->join('status', 'laporan.id_status', '=', 'status.id')
-            ->leftJoin('pelanggan', 'laporan.id_pelanggan', '=', 'pelanggan.id')
-            ->select(
-                'laporan.*', 
-                'areas.nama_area', 
-                'jenis_pekerjaan.nama_jenis', 
-                'status.status_kerja',
-                'pelanggan.nama as nama_pelanggan'
-            )
-            ->where('laporan.id_pengawas', $currentPengawasId)
-            ->orderBy('laporan.created_at', 'desc');
+        // --- 3. RECENT ACTIVITY QUERY (terfilter) ---
+        $query = Laporan::with(['area', 'jenisPekerjaan', 'status', 'pelanggan'])
+            ->orderBy('created_at', 'desc');
 
-        // 🔹 Filter by Status (mapping ke id_status)
-        if ($statusFilter) {
-            $statusMap = [
-                'open'        => [1],
-                'on_progress' => [2],
-                'completed'   => [3],
-                'on_hold'     => [], // tidak ada di DB
-            ];
-            $statusIds = $statusMap[$statusFilter] ?? [];
-            if (!empty($statusIds)) {
-                $query->whereIn('laporan.id_status', $statusIds);
-            }
+        // Filter: Status
+        if ($request->filled('status')) {
+            // Normalise: 'open' dan 'pending' dianggap sama
+            $statusValue = $request->status === 'open' ? 'pending' : $request->status;
+
+            $query->whereHas('status', function ($q) use ($statusValue) {
+                if ($statusValue === 'pending') {
+                    $q->whereIn('status_kerja', ['pending', 'open']);
+                } else {
+                    $q->where('status_kerja', $statusValue);
+                }
+            });
         }
 
-        // 🔹 Filter by Area
-        if ($areaFilter) {
-            $query->where('laporan.id_area', $areaFilter);
+        // Filter: Area
+        if ($request->filled('area')) {
+            $query->where('id_area', $request->area);
         }
 
-        // 🔹 Filter Cepat (filter type)
-        if ($filterType) {
-            match ($filterType) {
-                'overdue' => $query->whereIn('laporan.id_status', [1, 2])
-                                   ->whereNotNull('laporan.tanggal_selesai')
-                                   ->whereDate('laporan.tanggal_selesai', '<', $today),
-                'due_today' => $query->whereIn('laporan.id_status', [1, 2])
-                                     ->whereDate('laporan.tanggal_selesai', $today),
-                'created_today' => $query->whereDate('laporan.created_at', $today),
-                'due_this_week' => $query->whereIn('laporan.id_status', [1, 2])
-                                         ->whereNotNull('laporan.tanggal_selesai')
-                                         ->whereDate('laporan.tanggal_selesai', '>=', $today)
-                                         ->whereDate('laporan.tanggal_selesai', '<=', $endOfWeek),
+        // Filter: Cepat (overdue, due_today, dll)
+        if ($request->filled('filter')) {
+            match ($request->filter) {
+                'overdue', 'overdue_open' =>
+                    $query->whereHas('status', fn($q) => $q->whereNotIn('status_kerja', ['completed']))
+                          ->whereNotNull('tanggal_selesai')
+                          ->whereDate('tanggal_selesai', '<', $today),
+
+                'due_today' =>
+                    $query->whereHas('status', fn($q) => $q->whereNotIn('status_kerja', ['completed']))
+                          ->whereDate('tanggal_selesai', $today),
+
+                'created_today' =>
+                    $query->whereDate('created_at', $today),
+
+                'due_this_week' =>
+                    $query->whereHas('status', fn($q) => $q->whereNotIn('status_kerja', ['completed']))
+                          ->whereNotNull('tanggal_selesai')
+                          ->whereDate('tanggal_selesai', '>=', $today)
+                          ->whereDate('tanggal_selesai', '<=', $endOfWeek),
+
                 default => null,
             };
         }
 
-        // 🔹 Filter Search
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('laporan.no_insiden', 'LIKE', "%{$search}%")
-                  ->orWhere('laporan.keterangan', 'LIKE', "%{$search}%")
-                  ->orWhere('laporan.no_sap', 'LIKE', "%{$search}%")
-                  ->orWhere('areas.nama_area', 'LIKE', "%{$search}%")
-                  ->orWhere('jenis_pekerjaan.nama_jenis', 'LIKE', "%{$search}%")
-                  ->orWhere('pelanggan.nama', 'LIKE', "%{$search}%");
+        // Filter: Search
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('no_insiden', 'like', "%{$s}%")
+                  ->orWhere('keterangan', 'like', "%{$s}%")
+                  ->orWhere('no_sap', 'like', "%{$s}%")
+                  ->orWhereHas('area', fn($r) => $r->where('nama_area', 'like', "%{$s}%"))
+                  ->orWhereHas('jenisPekerjaan', fn($r) => $r->where('nama_jenis', 'like', "%{$s}%"))
+                  ->orWhereHas('pelanggan', fn($r) => $r->where('nama', 'like', "%{$s}%")
+                      ->orWhere('no_pelanggan', 'like', "%{$s}%"))
+                  ->orWhereHas('status', function ($r) use ($s) {
+                      $map = [
+                          'terbuka'           => ['pending', 'open'],
+                          'open'              => ['pending', 'open'],
+                          'pending'           => ['pending', 'open'],
+                          'sedang dikerjakan' => ['on_progress'],
+                          'dikerjakan'        => ['on_progress'],
+                          'proses'            => ['on_progress'],
+                          'on progress'       => ['on_progress'],
+                          'on_progress'       => ['on_progress'],
+                          'ditunda'           => ['on_hold'],
+                          'on hold'           => ['on_hold'],
+                          'on_hold'           => ['on_hold'],
+                          'selesai'           => ['completed'],
+                          'completed'         => ['completed'],
+                          'done'              => ['completed'],
+                      ];
+                      $key    = strtolower(trim($s));
+                      $values = $map[$key] ?? null;
+                      if ($values) {
+                          $r->whereIn('status_kerja', $values);
+                      } else {
+                          $r->where('status_kerja', 'like', "%{$s}%");
+                      }
+                  });
             });
         }
 
         $recentReports = $query->limit(10)->get();
-        $searchCount = $search ? $recentReports->count() : null;
+        $searchCount   = $request->filled('search') ? $recentReports->count() : null;
 
-        return view('dashboard.overview', [
-            'statusData'     => $statusData,
-            'workOrders'     => $workOrders,
-            'recentReports'  => $recentReports,
-            'search'         => $search,
-            'searchCount'    => $searchCount,
-        ]);
+        return view('dashboard.overview', compact(
+            'statusData',
+            'workOrders',
+            'recentReports',
+            'searchCount',
+        ));
     }
 }
