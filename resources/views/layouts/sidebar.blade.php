@@ -107,6 +107,18 @@
                 <i class="fa-solid fa-table-list w-6"></i> Bill of Quantity (BQ)
             </a>
 
+            {{-- Support --}}
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Support</div>
+
+            {{-- Hubungi Developer --}}
+            <a href="{{ route('contact.index') }}"
+                class="flex items-center px-4 py-2.5 transition
+                    {{ request()->routeIs('contact.*')
+                        ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 font-medium'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600 border-l-4 border-transparent' }}">
+                <i class="fa-solid fa-headset w-6"></i> Hubungi Developer
+            </a>
+
         </nav>
 
         {{-- Bottom: User info --}}

@@ -11,6 +11,7 @@ use App\Http\Controllers\StatusController;
 use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ContactController;
 
 // ── GUEST ONLY ─────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -61,3 +62,7 @@ Route::get('/coming-soon/{feature}', function ($feature) {
         'featureSlug' => $feature,
     ]);
 })->middleware('auth')->name('coming-soon');
+
+// ── CONTACT DEVELOPER ─────────────────────────────────
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');

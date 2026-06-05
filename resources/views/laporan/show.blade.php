@@ -38,15 +38,17 @@
     <div class="max-w-7xl mx-auto px-6 py-6">
 
         @php
-            $statusBadge = [
-                'pending'     => ['bg' => 'bg-blue-100',   'text' => 'text-blue-800',   'label' => 'Open'],
-                'on_progress' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'label' => 'Sedang Dikerjakan'],
-                'completed'   => ['bg' => 'bg-green-100',  'text' => 'text-green-800',  'label' => 'Selesai'],
-            ][$laporan->status->status_kerja] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'label' => 'Unknown'];
+            $status       = $laporan->status;
+            $isCompleted  = $status->status_kerja === 'completed';
 
             $isOverdue = $laporan->tanggal_selesai
-                && $laporan->status->status_kerja !== 'completed'
-                && \Carbon\Carbon::parse($laporan->tanggal_selesai)->isPast();
+                && !$isCompleted
+                && \Carbon\Carbon::parse($laporan->tanggal_selesai)->startOfDay()->isPast()
+                && \Carbon\Carbon::today()->gt(\Carbon\Carbon::parse($laporan->tanggal_selesai)->startOfDay());
+
+            $sisaHari = ($laporan->tanggal_selesai && !$isCompleted)
+                ? \Carbon\Carbon::today()->diffInDays(\Carbon\Carbon::parse($laporan->tanggal_selesai)->startOfDay(), false)
+                : null;
 
             $fotoPekerjaan    = $laporan->dokumen->where('tipe', 'pekerjaan');
             $fotoAdministrasi = $laporan->dokumen->where('tipe', 'administrasi');
@@ -56,14 +58,35 @@
 
         {{-- Status + Tanggal --}}
         <div class="flex flex-wrap items-center gap-3 mb-6">
-            <span class="px-3 py-1 {{ $statusBadge['bg'] }} {{ $statusBadge['text'] }} text-sm font-semibold rounded-full">
-                {{ $statusBadge['label'] }}
+
+            {{-- Badge Status (pakai accessor model) --}}
+            <span class="px-3 py-1 {{ $status->badge_class }} text-sm font-semibold rounded-full">
+                {{ $status->label }}
             </span>
+
+            {{-- Badge Terlambat --}}
             @if($isOverdue)
                 <span class="px-3 py-1 bg-red-100 text-red-700 text-sm font-semibold rounded-full flex items-center gap-1">
                     <i class="fa-solid fa-triangle-exclamation"></i> Terlambat
                 </span>
+
+            {{-- Badge Sisa Hari (hanya jika belum selesai & ada tanggal_selesai & belum overdue) --}}
+            @elseif($sisaHari !== null)
+                @if($sisaHari === 0)
+                    <span class="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-semibold rounded-full flex items-center gap-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> Jatuh tempo hari ini
+                    </span>
+                @elseif($sisaHari <= 7)
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-semibold rounded-full flex items-center gap-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Sisa {{ $sisaHari }} hari
+                    </span>
+                @else
+                    <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-semibold rounded-full flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i> Sisa {{ $sisaHari }} hari
+                    </span>
+                @endif
             @endif
+
             <span class="text-sm text-gray-500">
                 <i class="fa-regular fa-calendar mr-1"></i>
                 Dilaporkan: {{ \Carbon\Carbon::parse($laporan->tanggal_laporan)->isoFormat('D MMMM Y') }}
@@ -105,7 +128,7 @@
                         <div>
                             <label class="text-xs font-medium text-gray-500 uppercase">Link Maps</label>
                             <a href="{{ $laporan->link_maps }}" target="_blank"
-                            class="mt-1 flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                               class="mt-1 flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-medium">
                                 <i class="fa-solid fa-map-location-dot"></i>
                                 Buka di Maps
                                 <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
@@ -191,7 +214,8 @@
                                 <p class="mt-1 text-gray-800">
                                     @if($laporan->tanggal_survei && $laporan->tanggal_selesai)
                                         {{ \Carbon\Carbon::parse($laporan->tanggal_survei)->diffInDays($laporan->tanggal_selesai) }} hari
-                                    @else -
+                                    @else
+                                        -
                                     @endif
                                 </p>
                             </div>
@@ -230,7 +254,7 @@
                 </div>
                 @endif
 
-                {{-- FOTO PEKERJAAN --}}
+                {{-- Foto Pekerjaan --}}
                 @if($fotoPekerjaan->count())
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
@@ -260,7 +284,7 @@
                 </div>
                 @endif
 
-                {{-- FOTO ADMINISTRASI --}}
+                {{-- Foto Administrasi --}}
                 @if($fotoAdministrasi->count())
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
@@ -310,7 +334,7 @@
                             <div class="space-y-2">
                                 @foreach($dokumenList as $doc)
                                 <a href="{{ Storage::url($doc->path_file) }}" target="_blank"
-                                class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition group">
+                                   class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition group">
                                     <div class="shrink-0">
                                         @if($doc->mime_type === 'application/pdf')
                                             <i class="fa-regular fa-file-pdf text-red-500 text-xl"></i>
@@ -368,7 +392,7 @@
                     </div>
                     <div class="p-5 space-y-2">
                         <a href="{{ route('laporan.edit', $laporan) }}"
-                        class="flex w-full items-center px-4 py-2.5 text-sm text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition">
+                           class="flex w-full items-center px-4 py-2.5 text-sm text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition">
                             <i class="fa-solid fa-pen-to-square mr-2"></i>Edit Laporan
                         </a>
                         <button onclick="window.print()"
@@ -376,7 +400,7 @@
                             <i class="fa-solid fa-print mr-2"></i>Cetak / PDF
                         </button>
                         <a href="{{ route('laporan.index') }}"
-                        class="flex w-full items-center px-4 py-2.5 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                           class="flex w-full items-center px-4 py-2.5 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
                             <i class="fa-solid fa-list mr-2"></i>Kembali ke Daftar
                         </a>
                     </div>
@@ -387,7 +411,7 @@
     </div>
 </div>
 
-{{-- LIGHTBOX (sama seperti sebelumnya) --}}
+{{-- Lightbox --}}
 <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85" onclick="if(event.target===this) tutupLightbox()">
     <div class="absolute top-4 left-0 right-0 flex justify-between items-center px-6 z-10">
         <span id="lb-caption" class="text-white text-sm opacity-80 truncate max-w-xs"></span>
@@ -403,7 +427,7 @@
 </div>
 
 @php
-    $fotosPekerjaan = $fotoPekerjaan->map(fn($f) => ['src' => Storage::url($f->path_file), 'caption' => $f->nama_file, 'download' => Storage::url($f->path_file)])->values();
+    $fotosPekerjaan    = $fotoPekerjaan->map(fn($f) => ['src' => Storage::url($f->path_file), 'caption' => $f->nama_file, 'download' => Storage::url($f->path_file)])->values();
     $fotosAdministrasi = $fotoAdministrasi->map(fn($f) => ['src' => Storage::url($f->path_file), 'caption' => $f->nama_file, 'download' => Storage::url($f->path_file)])->values();
 @endphp
 
