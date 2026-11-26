@@ -1,4 +1,11 @@
+<p align="left">
+  <img src="public/assets/images/logo-pln.svg" alt="Logo PLN" width="52" />
+</p>
+
 # MaintainNow - Dashboard Monitoring Pemeliharaan Distribusi PLN
+
+> [!IMPORTANT]
+> **Disclaimer:** Seluruh data yang terdapat pada aplikasi, seeder basis data, tangkapan layar, serta video demonstrasi dalam repositori ini (termasuk nomor insiden, data pelanggan, nama pengawas, nilai RAB, BQ, dan lokasi) bersifat **dummy / simulasi pengembangan** semata dan **bukan merupakan data resmi maupun kegiatan yang memang direncanakan atau dilaksanakan oleh PT PLN (Persero) atau instansi pemerintah terkait**.
 
 Sistem informasi manajemen work order, insiden jaringan distribusi, rencana anggaran biaya (RAB), Bill of Quantity (BQ), penutupan kontrak, serta arsip dokumentasi lapangan berbasis **Laravel 12**, **Inertia.js**, **React + TypeScript**, **Tailwind CSS v4**, dan **shadcn/ui** dengan pendekatan visual **Achromatic Ledger**.
 
