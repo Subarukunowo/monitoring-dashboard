@@ -1,4 +1,4 @@
-# MaintainNow — Dashboard Monitoring Pemeliharaan Distribusi PLN
+# MaintainNow - Dashboard Monitoring Pemeliharaan Distribusi PLN
 
 Sistem informasi manajemen work order, insiden jaringan distribusi, rencana anggaran biaya (RAB), Bill of Quantity (BQ), penutupan kontrak, serta arsip dokumentasi lapangan berbasis **Laravel 12**, **Inertia.js**, **React + TypeScript**, **Tailwind CSS v4**, dan **shadcn/ui** dengan pendekatan visual **Achromatic Ledger**.
 
