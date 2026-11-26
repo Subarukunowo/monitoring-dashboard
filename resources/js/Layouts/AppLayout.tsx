@@ -34,16 +34,13 @@ interface NavLinkItem {
 
 export function MaintainNowLogo() {
     return (
-        <svg viewBox="0 0 28 28" className="h-7 w-7 shrink-0" aria-hidden="true">
-            <rect x="1" y="1" width="26" height="26" rx="6" fill="#141414" />
-            <path
-                d="M15.6 5.5L9.2 14.8h4.5l-1.3 7.7 6.4-9.3h-4.5l1.3-7.7z"
-                fill="#1d5fbf"
-                stroke="#ffffff"
-                strokeWidth="1.1"
-                strokeLinejoin="round"
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-[#e3e6ec] bg-white p-1">
+            <img
+                src="/assets/images/logo-pln.svg"
+                alt="Logo PLN"
+                className="h-full w-full object-contain"
             />
-        </svg>
+        </div>
     );
 }
 
@@ -237,6 +234,9 @@ export default function AppLayout({
                             <LogOut className="h-4 w-4" />
                         </button>
                     </div>
+                    <p className="mt-1 px-2 text-[11px] leading-snug text-[#667085]">
+                        Data simulasi (dummy), bukan kegiatan resmi instansi pemerintah.
+                    </p>
                 </div>
             )}
         </div>

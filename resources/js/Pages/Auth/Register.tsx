@@ -121,6 +121,9 @@ export default function Register() {
                         Masuk di sini
                     </Link>
                 </p>
+                <p className="mt-3 text-center text-[11px] leading-relaxed text-[#667085]">
+                    Disclaimer: Seluruh data pada aplikasi ini bersifat dummy (simulasi) dan bukan kegiatan yang direncanakan oleh instansi pemerintah terkait.
+                </p>
             </div>
         </div>
     );
