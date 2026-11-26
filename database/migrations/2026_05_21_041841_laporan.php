@@ -15,25 +15,25 @@ return new class extends Migration
             $table->time('jam_laporan')->nullable();
 
             $table->foreignId('id_pelanggan')
-                  ->nullable()
-                  ->constrained('pelanggan')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('pelanggan')
+                ->nullOnDelete();
 
             $table->foreignId('id_area')
-                  ->constrained('areas');
+                ->constrained('areas');
 
             $table->foreignId('id_pengawas')
-                  ->nullable()
-                  ->constrained('pengawas')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('pengawas')
+                ->nullOnDelete();
 
             $table->foreignId('id_jenis_pekerjaan')
-                  ->nullable()
-                  ->constrained('jenis_pekerjaan')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('jenis_pekerjaan')
+                ->nullOnDelete();
 
             $table->foreignId('id_status')
-                  ->constrained('status');
+                ->constrained('status');
 
             $table->date('tanggal_survei')->nullable();
             $table->decimal('nilai_rab', 15, 2)->nullable();

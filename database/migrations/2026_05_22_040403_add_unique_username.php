@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         // database/migrations/xxxx_add_unique_to_users_name.php
-Schema::table('users', function (Blueprint $table) {
-    $table->string('name')->unique()->change();
-});
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('name')->unique()->change();
+        });
     }
 
     /**

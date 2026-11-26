@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class LoginController extends Controller
 {
@@ -12,16 +13,17 @@ class LoginController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
-        return view('auth.login');
+
+        return Inertia::render('Auth/Login');
     }
 
     public function login(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string',
+            'name' => 'required|string',
             'password' => 'required',
         ], [
-            'name.required'     => 'Nama wajib diisi.',
+            'name.required' => 'Nama wajib diisi.',
             'password.required' => 'Password wajib diisi.',
         ]);
 
@@ -29,6 +31,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+
             return redirect()->intended(route('dashboard'));
         }
 
@@ -42,6 +45,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 }

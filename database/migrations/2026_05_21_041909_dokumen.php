@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('id_laporan')
-                  ->constrained('laporan')
-                  ->cascadeOnDelete();
+                ->constrained('laporan')
+                ->cascadeOnDelete();
 
             $table->enum('tipe', ['pekerjaan', 'administrasi']);
             $table->string('nama_file', 255);

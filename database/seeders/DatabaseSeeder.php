@@ -9,8 +9,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            MasterDataSeeder::class, // Area, Pengawas, JenisPekerjaan, Status
-            LaporanSeeder::class,    // Pelanggan + Laporan
+            UserSeeder::class,
+            MasterDataSeeder::class,
+            LaporanSeeder::class,
+            BqSeeder::class,
         ]);
     }
 }

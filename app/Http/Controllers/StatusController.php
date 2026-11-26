@@ -5,18 +5,35 @@ namespace App\Http\Controllers;
 use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class StatusController extends Controller
 {
     public function index()
     {
-        $statuses = Status::orderBy('id')->get();
-        return view('status.index', compact('statuses'));
+        $statuses = Status::withCount('laporan')->orderBy('id')->get()->map(fn ($s) => [
+            'id' => $s->id,
+            'status_kerja' => $s->status_kerja,
+            'label' => $s->label,
+            'laporan_count' => $s->laporan_count,
+        ]);
+
+        return Inertia::render('Master/Status', [
+            'statuses' => $statuses,
+        ]);
     }
 
     public function create()
     {
-        return view('status.create');
+        return Inertia::render('Master/Status', [
+            'statuses' => Status::withCount('laporan')->orderBy('id')->get()->map(fn ($s) => [
+                'id' => $s->id,
+                'status_kerja' => $s->status_kerja,
+                'label' => $s->label,
+                'laporan_count' => $s->laporan_count,
+            ]),
+            'openCreate' => true,
+        ]);
     }
 
     public function store(Request $request)
@@ -37,7 +54,15 @@ class StatusController extends Controller
 
     public function edit(Status $status)
     {
-        return view('status.edit', compact('status'));
+        return Inertia::render('Master/Status', [
+            'statuses' => Status::withCount('laporan')->orderBy('id')->get()->map(fn ($s) => [
+                'id' => $s->id,
+                'status_kerja' => $s->status_kerja,
+                'label' => $s->label,
+                'laporan_count' => $s->laporan_count,
+            ]),
+            'editingStatus' => $status,
+        ]);
     }
 
     public function update(Request $request, Status $status)

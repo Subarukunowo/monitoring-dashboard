@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class RegisterController extends Controller
 {
@@ -14,26 +15,28 @@ class RegisterController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
-        return view('auth.register');
+
+        return Inertia::render('Auth/Register');
     }
 
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255|unique:users,name',
+            'name' => 'required|string|max:255|unique:users,name',
             'password' => 'required|min:8|confirmed',
         ], [
-            'name.required'      => 'Nama wajib diisi.',
-            'name.unique'        => 'Nama sudah digunakan, pilih nama lain.',
-            'name.max'           => 'Nama maksimal 255 karakter.',
-            'password.required'  => 'Password wajib diisi.',
-            'password.min'       => 'Password minimal 8 karakter.',
+            'name.required' => 'Nama wajib diisi.',
+            'name.unique' => 'Nama sudah digunakan, pilih nama lain.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->name . '_' . time() . '@maintainnow.local',
+            'name' => $request->name,
+            'email' => $request->name.'_'.time().'@maintainnow.local',
+            'role' => 'user',
             'password' => Hash::make($request->password),
         ]);
 

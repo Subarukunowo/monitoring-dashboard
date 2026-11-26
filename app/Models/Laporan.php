@@ -21,21 +21,27 @@ class Laporan extends Model
         'id_status',
         'tanggal_survei',
         'nilai_rab',
+        'status_rab',
+        'rab_catatan',
         'no_sap',
         'tanggal_selesai',
         'keterangan',
-        'link_maps',          // ← kolom baru di tabel laporan
+        'link_maps',
+        'is_closed',
+        'closed_at',
+        'closed_by',
+        'catatan_penutupan',
     ];
 
     protected $casts = [
         'tanggal_laporan' => 'date',
-        'jam_laporan'     => 'datetime:H:i',
-        'tanggal_survei'  => 'date',
+        'jam_laporan' => 'datetime:H:i',
+        'tanggal_survei' => 'date',
         'tanggal_selesai' => 'date',
-        'nilai_rab'       => 'decimal:2',
+        'nilai_rab' => 'decimal:2',
+        'is_closed' => 'boolean',
+        'closed_at' => 'datetime',
     ];
-
-    // ─── Relationships ────────────────────────────────────────────────────
 
     public function pelanggan(): BelongsTo
     {
@@ -67,28 +73,31 @@ class Laporan extends Model
         return $this->hasMany(Dokumen::class, 'id_laporan');
     }
 
-    // ─── Accessors / Helpers ──────────────────────────────────────────────
+    public function bqItems(): HasMany
+    {
+        return $this->hasMany(BqItem::class, 'id_laporan');
+    }
 
-    /**
-     * Badge status untuk UI (berdasarkan nilai enum status_kerja).
-     * Dipanggil via $laporan->status_badge
-     */
+    public function closedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'closed_by');
+    }
+
     public function getStatusBadgeAttribute(): array
     {
         $map = [
-            'open'        => ['class' => 'bg-blue-100 text-blue-800',   'label' => 'Open'],
-            'on_progress' => ['class' => 'bg-yellow-100 text-yellow-800', 'label' => 'Sedang Dikerjakan'],
-            'completed'   => ['class' => 'bg-green-100 text-green-800',  'label' => 'Selesai'],
+            'pending' => ['class' => 'bg-red-100 text-red-800', 'label' => 'Terbuka'],
+            'open' => ['class' => 'bg-red-100 text-red-800', 'label' => 'Terbuka'],
+            'on_progress' => ['class' => 'bg-amber-100 text-amber-800', 'label' => 'Sedang Dikerjakan'],
+            'on_hold' => ['class' => 'bg-orange-100 text-orange-800', 'label' => 'Ditunda'],
+            'completed' => ['class' => 'bg-emerald-100 text-emerald-800', 'label' => 'Selesai'],
         ];
 
         $key = $this->status?->status_kerja ?? '';
-        return $map[$key] ?? ['class' => 'bg-gray-100 text-gray-800', 'label' => 'Unknown'];
+
+        return $map[$key] ?? ['class' => 'bg-neutral-100 text-neutral-800', 'label' => 'Tidak Diketahui'];
     }
 
-    /**
-     * Apakah laporan ini sudah melewati deadline dan belum selesai?
-     * Dipanggil via $laporan->is_overdue
-     */
     public function getIsOverdueAttribute(): bool
     {
         return $this->tanggal_selesai !== null

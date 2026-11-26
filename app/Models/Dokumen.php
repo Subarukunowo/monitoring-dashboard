@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Dokumen extends Model
 {
-    protected $table    = 'dokumen';
-    public    $timestamps = false;
+    protected $table = 'dokumen';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'id_laporan',
@@ -17,7 +18,7 @@ class Dokumen extends Model
         'path_file',
         'mime_type',
         'ukuran_file',
-        'uploaded_at',  
+        'uploaded_at',
     ];
 
     protected $casts = [

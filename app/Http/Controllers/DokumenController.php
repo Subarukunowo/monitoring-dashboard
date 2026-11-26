@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Dokumen;
@@ -11,13 +12,13 @@ class DokumenController extends Controller
     public function store(Request $request, Laporan $laporan)
     {
         $validated = $request->validate([
-            'tipe' => 'required|in:pekerjaan,administrasi',
-            'file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx' // max 10MB
+            'tipe' => 'required|in:pekerjaan,administrasi,dokumen',
+            'file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx',
         ]);
 
         $file = $validated['file'];
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('dokumen/' . $laporan->id, $filename, 'public');
+        $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+        $path = $file->storeAs('dokumen/'.$laporan->id, $filename, 'public');
 
         Dokumen::create([
             'id_laporan' => $laporan->id,
@@ -37,6 +38,7 @@ class DokumenController extends Controller
             Storage::disk('public')->delete($dokumen->path_file);
         }
         $dokumen->delete();
+
         return back()->with('success', 'Dokumen berhasil dihapus!');
     }
 }
